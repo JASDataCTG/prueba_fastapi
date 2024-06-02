@@ -6,10 +6,12 @@ from user_jwt import createToken
 
 login_user = APIRouter()
 
+
 class User(BaseModel):
     email: str
     password: str
-    
+
+
 @login_user.post("/login", tags=["Usuario"])
 def login(user: User):
     if user.email == "jacosol@msn.com" and user.password == "1234":

@@ -10,6 +10,7 @@ from user_jwt import validateToken
 
 routerMovie = APIRouter()
 
+
 class Movie(BaseModel):
     # id: Optional[int] = None
     titulo: str = Field(default="Título de la película", min_length=5, max_length=60)
@@ -17,13 +18,15 @@ class Movie(BaseModel):
     anio: int = Field(default=2023)
     rating: float = Field(ge=1, le=10)
     categoria: str = Field(default="Categoría", min_length=5, max_length=15)
-    
+
+
 class BearerJWT(HTTPBearer):
     async def __call__(self, request: Request):
         auth = await super().__call__(request)
         data = validateToken(auth.credentials)
         if data["email"] != "jacosol@msn.com":
             raise HTTPException(status_code=403, details="Credenciales incorrectas")
+
 
 @routerMovie.get("/movies", tags=["Películas"], dependencies=[Depends(BearerJWT())])
 def get_movies():
@@ -52,7 +55,7 @@ def get_movies_by_category(categoria: str = Query(min_length=3, max_length=15)):
             status_code=404, content={"Mensaje": "Recurso no encontrado"}
         )
     return JSONResponse(status_code=200, content=jsonable_encoder(data))
-    
+
 
 @routerMovie.post("/movies", tags=["Películas"], status_code=201)
 def create_movie(movie: Movie):
@@ -100,4 +103,3 @@ def delete_movie(id: int):
             "data": jsonable_encoder(data),
         }
     )
-
